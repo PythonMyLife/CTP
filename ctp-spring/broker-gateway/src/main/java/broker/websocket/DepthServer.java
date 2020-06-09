@@ -1,4 +1,4 @@
-package broker.websocket.message;
+package broker.websocket;
 
 import broker.websocket.message.decoder.DepthDecoder;
 import broker.websocket.message.encoder.DepthMessageEncoder;
