@@ -130,4 +130,19 @@ public class Transaction implements Serializable {
     public int hashCode() {
         return Objects.hash(id, product, time, price, num, tradersell, traderbuy, brokersell, brokerbuy);
     }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id='" + id + '\'' +
+                ", product='" + product + '\'' +
+                ", time='" + time + '\'' +
+                ", price='" + price + '\'' +
+                ", num=" + num +
+                ", tradersell='" + tradersell + '\'' +
+                ", traderbuy='" + traderbuy + '\'' +
+                ", brokersell='" + brokersell + '\'' +
+                ", brokerbuy='" + brokerbuy + '\'' +
+                '}';
+    }
 }
