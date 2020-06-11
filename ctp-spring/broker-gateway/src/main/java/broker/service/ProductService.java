@@ -66,6 +66,6 @@ public class ProductService {
             array.add(jsonObject);
         }
         object.put("message", array);
-        kafkaTemplate.send("brokerList", object.toJSONString());
+        kafkaTemplate.send("productList", object.toJSONString());
     }
 }
