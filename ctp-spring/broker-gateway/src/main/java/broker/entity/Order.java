@@ -14,13 +14,16 @@ public class Order implements Serializable {
     @Id
     private String id;
     private String type;
+    private String time;
     private JSONObject object;
+    /* status = 0 pending, status = 1 handled */
     private Integer status;
 
     public Order() {}
 
-    public Order(String type, JSONObject object, Integer status) {
+    public Order(String type,String time, JSONObject object, Integer status) {
         this.type = type;
+        this.time = time;
         this.object = object;
         this.status = status;
     }
@@ -43,6 +46,14 @@ public class Order implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public JSONObject getObject() {
@@ -68,12 +79,13 @@ public class Order implements Serializable {
         Order order = (Order) o;
         return id.equals(order.id) &&
                 type.equals(order.type) &&
+                time.equals(order.time) &&
                 object.equals(order.object) &&
                 status.equals(order.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, type, object, status);
+        return Objects.hash(id, type, time, object, status);
     }
 }

@@ -1,5 +1,6 @@
-package broker.websocket.message;
+package broker.websocket;
 
+import broker.dao.DepthDao;
 import broker.websocket.message.decoder.DepthDecoder;
 import broker.websocket.message.encoder.DepthMessageEncoder;
 import broker.websocket.message.entity.DepthJoinMessage;
@@ -7,6 +8,7 @@ import broker.websocket.message.entity.DepthMessage;
 import broker.websocket.message.entity.Message;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
@@ -29,6 +31,10 @@ import java.util.logging.Logger;
 public class DepthServer {
     private static Logger logger = Logger.getLogger("websocket");
     private static final Map<String, Set<Session>> products = new ConcurrentHashMap<>();
+
+    public static DepthDao depthDao;
+
+//    private DepthDao depthDao = (DepthDao) ApplicationHelper.getBean("depthDao");
 
     @OnOpen
     public void connect(@PathParam("productId") String productId, Session session) throws Exception {
@@ -57,6 +63,9 @@ public class DepthServer {
                            Message msg, Session session) throws Exception {
         if(msg instanceof DepthJoinMessage) {
             // send depth message
+            String depth = depthDao.findAll(productId);
+            session.getBasicRemote().sendText(depth);
+//            session.getBasicRemote().sendText("hi");
         }
     }
 

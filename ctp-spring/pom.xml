@@ -13,6 +13,7 @@
         <module>sso-server</module>
         <module>broker-gateway</module>
         <module>trader-gateway</module>
+        <module>broker-dealer</module>
     </modules>
     <packaging>pom</packaging>
 

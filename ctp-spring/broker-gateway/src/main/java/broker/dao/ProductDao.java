@@ -5,6 +5,8 @@ import broker.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class ProductDao {
     @Autowired
@@ -25,5 +27,9 @@ public class ProductDao {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public List<Product> findAll() {
+        return productRepository.findAll();
     }
 }
