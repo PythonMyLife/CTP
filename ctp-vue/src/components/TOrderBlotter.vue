@@ -8,18 +8,18 @@
               <img alt="image" class="rounded-circle" src="../assets/img/profile_small.jpg"/>
               <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                 <span class="block m-t-xs font-bold">{{ username }}</span>
-                <span class="text-muted text-xs block">Broker</span>
+                <span class="text-muted text-xs block">Trader</span>
               </a>
             </div>
             <div class="logo-element">
               CTP
             </div>
           </li>
-          <li>
-            <router-link :to="{ name : 'BOrderBlotter' }"><i class="fa fa-table"></i> <span class="nav-label">Order Blotter</span></router-link>
-          </li>
           <li class="active">
-            <a href="#"><i class="fa fa-shopping-cart"></i> <span class="nav-label">Commodity Trade</span></a>
+            <a href="#"><i class="fa fa-table"></i> <span class="nav-label">Order Blotter</span></a>
+          </li>
+          <li>
+            <router-link :to="{ name : 'Trader' }"><i class="fa fa-shopping-cart"></i> <span class="nav-label">Commodity Trade</span></router-link>
           </li>
         </ul>
       </div>
@@ -43,8 +43,7 @@
       </div>
       <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-          <h2>Product List</h2>
-          <button class="btn-white btn btn-xs" @click="handleAdd()">Add New Product</button>
+          <h2>Order Blotter</h2>
         </div>
         <div class="col-lg-2">
         </div>
@@ -57,28 +56,32 @@
                 <div class="table-responsive">
                   <table class="table table-striped table-bordered table-hover dataTables-example" >
                     <thead>
-                    <tr>
-                      <th></th>
-                      <th>Product ID</th>
-                      <th>Name</th>
-                      <th>Category</th>
-                      <th>Period</th>
-                      <th>Operation</th>
-                    </tr>
+                      <tr>
+                        <th></th>
+                        <th>Trade ID</th>
+                        <th>Broker System</th>
+                        <th>Product ID</th>
+                        <th>Time</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Amount</th>
+                        <th>Trader 1</th>
+                        <th>Trader 2</th>
+                      </tr>
                     </thead>
                     <tbody>
-                    <tr class="gradeA" v-for="(item, index) of products" v-bind:key="index">
-                      <td>{{ index + 1 }}</td>
-                      <td>{{ item.id }}</td>
-                      <td>{{ item.name }}</td>
-                      <td>{{ item.category }}</td>
-                      <td>{{ item.period }}</td>
-                      <td>
-                        <div class="btn-group">
-                          <button class="btn-white btn btn-xs" @click="handleView(item)">View Market Depth</button>
-                        </div>
-                      </td>
-                    </tr>
+                      <tr class="gradeA" v-for="(item, index) of orders" v-bind:key="index">
+                        <td>{{ index + 1 }}</td>
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.brokerId }}</td>
+                        <td>{{ item.commodityId }}</td>
+                        <td>{{ item.time }}</td>
+                        <td>{{ item.type }}</td>
+                        <td>{{ item.price }}</td>
+                        <td>{{ item.amount }}</td>
+                        <td>{{ item.traderOneId }}</td>
+                        <td>{{ item.traderTwoId }}</td>
+                      </tr>
                     </tbody>
                     <tfoot>
                     </tfoot>
@@ -97,25 +100,21 @@
 export default {
   data () {
     return {
-      username: 'Broker1',
+      username: 'Trader1',
       product_id: '0',
-      products: [
+      orders: [
         {
           id: 'qp2020-06-08 :07:46:14',
-          name: '黄金',
-          category: '金属',
-          period: '2020年6月'
+          time: '2020-06-08 :07:46:14',
+          type: null,
+          price: 26.66,
+          amount: 100,
+          traderOneId: 'q',
+          traderTwoId: 'p',
+          brokerId: 's',
+          commodityId: 'aa'
         }
-      ],
-      order: {
-        type: '',
-        action: '',
-        price: '',
-        num: '',
-        traderId: '',
-        brokerId: '',
-        productId: ''
-      }
+      ]
     }
   },
   mounted () {
@@ -145,25 +144,16 @@ export default {
     })
   },
   methods: {
-    loadProduct () {
-      const url = '/getProductAll'
+    loadData () {
+      const url = '/getOrderByName'
       const param = {
         params: {
           name: this.username
         }
       }
       this.$axios.get(url, param).then(response => {
-        this.products = response.data
+        this.orders = response.data
       })
-    },
-    handleView (item) {
-      this.$router.push({
-        name: 'BMarketDepth',
-        params: { pid: item.id, pname: item.name, pcategory: item.category, pperiod: item.period }
-      })
-    },
-    handleAdd () {
-      this.$router.push({ name: 'BAddProduct' })
     }
   }
 }

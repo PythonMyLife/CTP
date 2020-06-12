@@ -1,12 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../components/HelloWorld.vue'
-import Login from '../components/Login.vue'
+import Login from '../components/Login'
 import Register from '../components/Register'
 import Trader from '../components/Trader'
 import Broker from '../components/Broker'
-import OrderBlotter from '../components/OrderBlotter'
-import MarketDepth from '../components/MarketDepth'
+import TOrderBlotter from '../components/TOrderBlotter'
+import TMarketDepth from '../components/TMarketDepth'
+import TMakeOrder from '../components/TMakeOrder'
+import BMarketDepth from '../components/BMarketDepth'
+import BOrderBlotter from '../components/BOrderBlotter'
+import BAddProduct from '../components/BAddProduct'
 
 Vue.use(VueRouter)
 
@@ -14,7 +17,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Login
   },
   {
     path: '/login',
@@ -37,14 +40,34 @@ const routes = [
     component: Broker
   },
   {
-    path: '/orderBlotter',
-    name: 'OrderBlotter',
-    component: OrderBlotter
+    path: '/tOrderBlotter',
+    name: 'TOrderBlotter',
+    component: TOrderBlotter
   },
   {
-    path: '/marketDepth',
-    name: 'MarketDepth',
-    component: MarketDepth
+    path: '/tMarketDepth',
+    name: 'TMarketDepth',
+    component: TMarketDepth
+  },
+  {
+    path: '/tMakeOrder',
+    name: 'TMakeOrder',
+    component: TMakeOrder
+  },
+  {
+    path: '/bMarketDepth',
+    name: 'BMarketDepth',
+    component: BMarketDepth
+  },
+  {
+    path: '/bOrderBlotter',
+    name: 'BOrderBlotter',
+    component: BOrderBlotter
+  },
+  {
+    path: '/bAddProduct',
+    name: 'BAddProduct',
+    component: BAddProduct
   }
 ]
 
