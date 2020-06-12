@@ -64,8 +64,8 @@ public class OrderService {
         JSONObject object = (JSONObject) jp.parse(record.value().toString());
         // transaction
         String productId = (String) object.get("productId");
-        String price = (String) object.get("price");
-        Integer num = Integer.valueOf((String) object.get("num"));
+        String price = String.valueOf(object.get("price"));
+        Integer num = Integer.valueOf(String.valueOf(object.get("num")));
         String traderSell = (String) object.get("traderSell");
         String traderBuy = (String) object.get("traderBuy");
         String brokerSell = (String) object.get("brokerSell");

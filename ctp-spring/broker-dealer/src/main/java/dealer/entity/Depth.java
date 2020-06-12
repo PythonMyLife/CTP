@@ -122,6 +122,24 @@ public class Depth implements Comparable<Depth>{
                 Long difference = Long.valueOf(this.time) - Long.valueOf(t1.getTime());
                 return difference > 0 ? 1 : -1;
             }
+        } else if(this.action.equals("sell")){
+            if(this.price < t1.getPrice()) {
+                return -1;
+            } else if(this.price > t1.getPrice()) {
+                return 1;
+            } else {
+                Long difference = Long.valueOf(this.time) - Long.valueOf(t1.getTime());
+                return difference > 0 ? 1 : -1;
+            }
+        } else if(this.action.equals("stopBuy")) {
+            if(this.price < t1.getPrice()) {
+                return 1;
+            } else if(this.price > t1.getPrice()) {
+                return -1;
+            } else {
+                Long difference = Long.valueOf(this.time) - Long.valueOf(t1.getTime());
+                return difference > 0 ? 1 : -1;
+            }
         } else {
             if(this.price < t1.getPrice()) {
                 return -1;

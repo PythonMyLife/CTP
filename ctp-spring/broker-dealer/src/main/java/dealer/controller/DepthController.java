@@ -14,10 +14,10 @@ public class DepthController {
     private DepthDao depthDao;
 
     @GetMapping("/insert")
-    public String insert() {
+    public String insert(String productId) {
         try {
             JSONObject object = new JSONObject();
-            return depthDao.insertOne("test", object);
+            return depthDao.insertOne(productId, object);
         } catch (Exception e) {
             e.printStackTrace();
             return "";
@@ -25,12 +25,12 @@ public class DepthController {
     }
 
     @GetMapping("/update")
-    public String update(String _id, Integer num) {
+    public String update(String productId, String _id, Integer num) {
         try {
             JSONObject object = new JSONObject();
             object.put("_id", _id);
             object.put("num", num);
-            depthDao.updateOne("test", object);
+            depthDao.updateOne(productId, object);
             return "1";
         } catch (Exception e) {
             e.printStackTrace();
@@ -39,11 +39,11 @@ public class DepthController {
     }
 
     @GetMapping("/delete")
-    public String delete(String _id) {
+    public String delete(String productId, String _id) {
         try {
             JSONObject object = new JSONObject();
             object.put("_id", _id);
-            depthDao.deleteOne("test", object);
+            depthDao.deleteOne(productId, object);
             return "1";
         } catch (Exception e) {
             e.printStackTrace();
@@ -52,9 +52,9 @@ public class DepthController {
     }
 
     @GetMapping("/all")
-    public String all() {
+    public String all(String productId) {
         try {
-            return depthDao.findAll("test").toJSONString();
+            return depthDao.findAll(productId).toJSONString();
         } catch (Exception e) {
             e.printStackTrace();
             return "";
@@ -62,11 +62,11 @@ public class DepthController {
     }
 
     @GetMapping("/find")
-    public String find(String id) {
+    public String find(String productId, String id) {
         try {
             JSONObject object = new JSONObject();
             object.put("_id", id);
-            return depthDao.findOne("test", object);
+            return depthDao.findOne(productId, object).toJSONString();
         } catch (Exception e) {
             e.printStackTrace();
             return "";

@@ -50,7 +50,7 @@ public class DepthDao {
         collection.updateOne(bson, document);
     }
 
-    public String findOne(String productId, JSONObject object) throws ParseException {
+    public JSONArray findOne(String productId, JSONObject object) throws ParseException {
         // 1.获取集合对象
         MongoCollection<Document> collection = mongoTemplate.getCollection(productId);
         // 2.创建用于查询和修改的BSON对象
@@ -64,7 +64,24 @@ public class DepthDao {
             JSONObject jsonObject = (JSONObject) jp.parse(document.toJson());
             array.add(jsonObject);
         }
-        return array.toJSONString();
+        return array;
+    }
+
+    public JSONArray findByOrder(String productId, JSONObject object) throws ParseException {
+        // 1.获取集合对象
+        MongoCollection<Document> collection = mongoTemplate.getCollection(productId);
+        // 2.创建用于查询和修改的BSON对象
+        Bson bson = eq("orderId", String.valueOf(object.get("orderId")));
+        //3.利用bson条件查询结果
+        FindIterable<Document> documents = collection.find(bson);
+        //4.将结果拼接成JSONArray
+        JSONArray array = new JSONArray();
+        JSONParser jp = new JSONParser();
+        for(Document document : documents) {
+            JSONObject jsonObject = (JSONObject) jp.parse(document.toJson());
+            array.add(jsonObject);
+        }
+        return array;
     }
 
     public void deleteOne(String productId, JSONObject object) {
@@ -72,6 +89,15 @@ public class DepthDao {
         MongoCollection<Document> collection = mongoTemplate.getCollection(productId);
         // 2.创建用于查询的BSON对象
         Bson bson = eq("_id", new ObjectId(object.get("_id").toString()));
+        // 3.修改对应的数据
+        collection.deleteOne(bson);
+    }
+
+    public void deleteByOrder(String productId, JSONObject object) {
+        // 1.获取集合对象
+        MongoCollection<Document> collection = mongoTemplate.getCollection(productId);
+        // 2.创建用于查询的BSON对象
+        Bson bson = eq("orderId", String.valueOf(object.get("orderId")));
         // 3.修改对应的数据
         collection.deleteOne(bson);
     }
