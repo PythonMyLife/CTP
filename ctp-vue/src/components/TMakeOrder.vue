@@ -74,8 +74,8 @@
                 <div class="form-group row"><label class="col-sm-2 col-form-label">Action</label>
                   <div class="col-sm-10">
                     <select class="form-control m-b" v-model="order.action">
-                      <option>Buy</option>
-                      <option>Sell</option>
+                      <option>buy</option>
+                      <option>sell</option>
                     </select>
                   </div>
                 </div>
@@ -86,26 +86,20 @@
                         <span class="input-group-addon">$</span>
                       </div>
                       <input type="text" class="form-control" v-model="order.price">
-                      <div class="input-group-append">
-                        <span class="input-group-addon">.00</span>
-                      </div>
                     </div>
                   </div>
                 </div>
                 <div class="form-group row"><label class="col-sm-2 col-form-label">Quantity</label>
                   <div class="col-sm-10">
                     <div class="input-group m-b">
-                      <input type="text" class="form-control" v-model="order.num">
-                      <div class="input-group-append">
-                        <span class="input-group-addon">.00</span>
-                      </div>
+                      <input type="text" class="form-control" v-model="order.amount">
                     </div>
                   </div>
                 </div>
                 <div class="form-group row"><label class="col-sm-2 col-form-label">Broker</label>
                   <div class="col-sm-10">
                     <select class="form-control m-b" v-model="order.brokerId">
-                      <option v-for="(item, index) in brokers" v-bind:key="index">{{ item.id }}</option>
+                      <option v-for="(item, index) in brokers" v-bind:key="index">{{ item }}</option>
                     </select>
                   </div>
                 </div>
@@ -138,72 +132,82 @@ export default {
         period: ''
       },
       brokers: [
-        {
-          id: 'broker1'
-        },
-        {
-          id: 'broker2'
-        }
+        // {
+        //   id: 'broker1'
+        // },
+        // {
+        //   id: 'broker2'
+        // }
       ],
       types: [
         {
-          name: 'Market Order'
+          name: 'market'
         },
         {
-          name: 'Limit Order'
+          name: 'limit'
         },
         {
-          name: 'Stop Order'
+          name: 'stop'
         },
         {
-          name: 'Cancel Order'
+          name: 'cancel'
         }
       ],
       order: {
         type: '',
         action: '',
         price: '',
-        num: '',
+        amount: '',
         brokerId: '',
-        traderId: '',
-        productId: ''
+        traderOneId: '',
+        traderTwoId: '',
+        commodityId: ''
       }
     }
   },
   mounted () {
-    this.getParams()
+    this.check()
+    this.loadBroker()
   },
   methods: {
+    check () {
+      this.username = localStorage.getItem('username')
+      const id = localStorage.getItem('id')
+      if (id !== 'trader' || this.username === '') {
+        alert('未登录或身份不正确！')
+        this.$router.push({ name: 'Login' })
+      }
+      this.getParams()
+    },
     getParams () {
       this.product.id = this.$route.params.pid
       this.product.name = this.$route.params.pname
       this.product.category = this.$route.params.pcategory
       this.product.period = this.$route.params.pperiod
-      this.username = this.$route.params.username
     },
     loadBroker () {
-      const url = '/getBrokerAll'
-      const param = {
-        params: {
-          name: this.username
-        }
-      }
-      this.$axios.get(url, param).then(response => {
-        this.brokers = response.data
+      const url = '/tui/getBroker'
+      this.$axios.get(url).then(response => {
+        this.brokers = response.data.message
       })
     },
     cancel () {
       this.$router.push({ name: 'Trader' })
     },
     submit () {
-      this.order.productId = this.product.id
-      this.order.traderId = this.username
+      this.order.commodityId = this.product.id
+      this.order.traderOneId = this.username
       console.log(this.order)
-      const url = '/saveOrder'
+      const url = '/tui/saveOrder'
       const param = {
         params: this.order
       }
       this.$axios.get(url, param).then(response => {
+        if (response.data === 'success') {
+          alert('下单成功！')
+        } else {
+          alert('下单失败！')
+        }
       })
     }
   }

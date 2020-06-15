@@ -57,30 +57,43 @@
                   <table class="table table-striped table-bordered table-hover dataTables-example" >
                     <thead>
                       <tr>
-                        <th></th>
                         <th>Trade ID</th>
-                        <th>Broker System</th>
+<!--                        <th>Broker System</th>-->
                         <th>Product ID</th>
                         <th>Time</th>
                         <th>Type</th>
                         <th>Price</th>
                         <th>Amount</th>
                         <th>Trader 1</th>
+                        <th>Broker 1</th>
                         <th>Trader 2</th>
+                        <th>Broker 2</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr class="gradeA" v-for="(item, index) of orders" v-bind:key="index">
-                        <td>{{ index + 1 }}</td>
-                        <td>{{ item.id }}</td>
-                        <td>{{ item.brokerId }}</td>
-                        <td>{{ item.commodityId }}</td>
+                        <td>{{ item.object.orderId }}</td>
+                        <td>{{ item.object.productId }}</td>
                         <td>{{ item.time }}</td>
-                        <td>{{ item.type }}</td>
-                        <td>{{ item.price }}</td>
-                        <td>{{ item.amount }}</td>
-                        <td>{{ item.traderOneId }}</td>
+                        <td>{{ item.object.type }}</td>
+                        <td>{{ item.object.price }}</td>
+                        <td>{{ item.object.num }}</td>
+                        <td>{{ item.object.trader }}</td>
+                        <td>{{ item.object.broker }}</td>
                         <td>{{ item.traderTwoId }}</td>
+                        <td></td>
+                      </tr>
+                      <tr class="gradeA" v-for="(item, index) of trades" v-bind:key="index">
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.productId }}</td>
+                        <td>{{ item.time }}</td>
+                        <td></td>
+                        <td>{{ item.price }}</td>
+                        <td>{{ item.num }}</td>
+                        <td>{{ item.traderSell }}</td>
+                        <td>{{ item.brokerSell }}</td>
+                        <td>{{ item.traderBuy }}</td>
+                        <td>{{ item.brokerBuy }}</td>
                       </tr>
                     </tbody>
                     <tfoot>
@@ -104,15 +117,30 @@ export default {
       product_id: '0',
       orders: [
         {
-          id: 'qp2020-06-08 :07:46:14',
           time: '2020-06-08 :07:46:14',
-          type: null,
-          price: 26.66,
-          amount: 100,
-          traderOneId: 'q',
-          traderTwoId: 'p',
-          brokerId: 's',
-          commodityId: 'aa'
+          object: {
+            orderId: '',
+            type: null,
+            price: 26.66,
+            num: 100,
+            trader: 'q',
+            traderTwoId: 'p',
+            broker: 's',
+            productId: 'aa'
+          }
+        }
+      ],
+      trades: [
+        {
+          time: '',
+          id: '',
+          price: '',
+          num: 0,
+          traderSell: '',
+          traderBuy: '',
+          brokerSell: '',
+          brokerBuy: '',
+          productId: ''
         }
       ]
     }
@@ -142,18 +170,48 @@ export default {
         ]
       })
     })
+    this.check()
   },
   methods: {
-    loadData () {
-      const url = '/getOrderByName'
+    check () {
+      this.username = localStorage.getItem('username')
+      const id = localStorage.getItem('id')
+      if (id !== 'trader' || this.username === '') {
+        alert('未登录或身份不正确！')
+        this.$router.push({ name: 'Login' })
+      }
+      this.initWebsocket()
+    },
+    initWebsocket () {
+      const url = 'ws://202.120.40.8:30401/websocket/' + this.username
+      this.wsocket = new WebSocket(url)
+      this.wsocket.onopen = this.onOpen
+      this.wsocket.onmessage = this.onMessage
+      this.wsocket.onerror = this.onError
+      this.wsocket.onclose = this.onClose
+    },
+    onOpen () {
+      console.log('connect to ws.')
+      const url = '/tui/getOrderByName'
       const param = {
         params: {
           name: this.username
         }
       }
       this.$axios.get(url, param).then(response => {
-        this.orders = response.data
       })
+    },
+    onError () {
+      console.log('connect error')
+    },
+    onClose (e) {
+      console.log('connect close', e)
+    },
+    onMessage (evt) {
+      const msg = JSON.parse(evt.data)
+      console.log(msg)
+      this.orders = msg.orders
+      this.trades = msg.transaction
     }
   }
 }

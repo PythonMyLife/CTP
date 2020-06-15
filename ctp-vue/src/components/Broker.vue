@@ -143,16 +143,21 @@ export default {
         ]
       })
     })
+    this.check()
   },
   methods: {
-    loadProduct () {
-      const url = '/getProductAll'
-      const param = {
-        params: {
-          name: this.username
-        }
+    check () {
+      this.username = localStorage.getItem('username')
+      const id = localStorage.getItem('id')
+      if (id !== 'broker' || this.username === '') {
+        alert('未登录或身份不正确！')
+        this.$router.push({ name: 'Login' })
       }
-      this.$axios.get(url, param).then(response => {
+      this.loadProduct()
+    },
+    loadProduct () {
+      const url = '/bui/api/broker/getProducts'
+      this.$axios.get(url).then(response => {
         this.products = response.data
       })
     },

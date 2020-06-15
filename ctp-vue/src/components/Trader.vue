@@ -143,17 +143,22 @@ export default {
         ]
       })
     })
+    this.check()
   },
   methods: {
-    loadProduct () {
-      const url = '/getProductAll'
-      const param = {
-        params: {
-          name: this.username
-        }
+    check () {
+      this.username = localStorage.getItem('username')
+      const id = localStorage.getItem('id')
+      if (id !== 'trader' || this.username === '') {
+        alert('未登录或身份不正确！')
+        this.$router.push({ name: 'Login' })
       }
-      this.$axios.get(url, param).then(response => {
-        this.products = response.data
+      this.loadProduct()
+    },
+    loadProduct () {
+      const url = '/tui/getProduct'
+      this.$axios.get(url).then(response => {
+        this.products = response.data.message
       })
     },
     handleView (item) {
@@ -165,7 +170,7 @@ export default {
     handleOrder (item) {
       this.$router.push({
         name: 'TMakeOrder',
-        params: { username: this.username, pid: item.id, pname: item.name, pcategory: item.category, pperiod: item.period }
+        params: { pid: item.id, pname: item.name, pcategory: item.category, pperiod: item.period }
       })
     }
   }

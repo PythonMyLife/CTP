@@ -57,31 +57,44 @@
                   <table class="table table-striped table-bordered table-hover dataTables-example" >
                     <thead>
                     <tr>
-                      <th></th>
                       <th>Trade ID</th>
-                      <th>Broker System</th>
+                      <!--                        <th>Broker System</th>-->
                       <th>Product ID</th>
                       <th>Time</th>
                       <th>Type</th>
                       <th>Price</th>
                       <th>Amount</th>
                       <th>Trader 1</th>
+                      <th>Broker 1</th>
                       <th>Trader 2</th>
+                      <th>Broker 2</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr class="gradeA" v-for="(item, index) of orders" v-bind:key="index">
-                      <td>{{ index + 1 }}</td>
-                      <td>{{ item.id }}</td>
-                      <td>{{ item.brokerId }}</td>
-                      <td>{{ item.commodityId }}</td>
-                      <td>{{ item.time }}</td>
-                      <td>{{ item.type }}</td>
-                      <td>{{ item.price }}</td>
-                      <td>{{ item.amount }}</td>
-                      <td>{{ item.traderOneId }}</td>
-                      <td>{{ item.traderTwoId }}</td>
-                    </tr>
+                      <tr class="gradeA" v-for="(item, index) of orders" v-bind:key="index">
+                        <td>{{ item.value.orderId }}</td>
+                        <td>{{ item.value.productId }}</td>
+                        <td>{{ item.time }}</td>
+                        <td>{{ item.value.type }}</td>
+                        <td>{{ item.value.price }}</td>
+                        <td>{{ item.value.num }}</td>
+                        <td>{{ item.value.trader }}</td>
+                        <td>{{ item.value.broker }}</td>
+                        <td>{{ item.value.traderTwoId }}</td>
+                        <td></td>
+                      </tr>
+                      <tr class="gradeA" v-for="(item, index) of trades" v-bind:key="index">
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.productId }}</td>
+                        <td>{{ item.time }}</td>
+                        <td></td>
+                        <td>{{ item.price }}</td>
+                        <td>{{ item.num }}</td>
+                        <td>{{ item.traderSell }}</td>
+                        <td>{{ item.brokerSell }}</td>
+                        <td>{{ item.traderBuy }}</td>
+                        <td>{{ item.brokerBuy }}</td>
+                      </tr>
                     </tbody>
                     <tfoot>
                     </tfoot>
@@ -104,15 +117,30 @@ export default {
       product_id: '0',
       orders: [
         {
-          id: 'qp2020-06-08 :07:46:14',
           time: '2020-06-08 :07:46:14',
-          type: null,
-          price: 26.66,
-          amount: 100,
-          traderOneId: 'q',
-          traderTwoId: 'p',
-          brokerId: 's',
-          commodityId: 'aa'
+          value: {
+            orderId: '',
+            type: null,
+            price: 26.66,
+            num: 100,
+            trader: 'q',
+            traderTwoId: 'p',
+            broker: 's',
+            productId: 'aa'
+          }
+        }
+      ],
+      trades: [
+        {
+          time: '',
+          id: '',
+          price: '',
+          num: 0,
+          traderSell: '',
+          traderBuy: '',
+          brokerSell: '',
+          brokerBuy: '',
+          productId: ''
         }
       ]
     }
@@ -142,18 +170,48 @@ export default {
         ]
       })
     })
+    this.check()
+  },
+  destroyed () {
+    this.wsocket.close()
   },
   methods: {
-    loadData () {
-      const url = '/getOrderByName'
-      const param = {
-        params: {
-          name: this.username
-        }
+    check () {
+      this.username = localStorage.getItem('username')
+      const id = localStorage.getItem('id')
+      if (id !== 'broker' || this.username === '') {
+        alert('未登录或身份不正确！')
+        this.$router.push({ name: 'Login' })
       }
-      this.$axios.get(url, param).then(response => {
-        this.orders = response.data
-      })
+      this.initWebsocket()
+    },
+    initWebsocket () {
+      const url = 'ws://202.120.40.8:30402/websocket/api/broker/orders'
+      this.wsocket = new WebSocket(url)
+      this.wsocket.onopen = this.onOpen
+      this.wsocket.onmessage = this.onMessage
+      this.wsocket.onerror = this.onError
+      this.wsocket.onclose = this.onClose
+    },
+    onOpen () {
+      const joinMsg = {}
+      joinMsg.type = 'join'
+      joinMsg.username = this.username
+      const jsonstr = JSON.stringify(joinMsg)
+      this.wsocket.send(jsonstr)
+      console.log('connect to ws.')
+    },
+    onError () {
+      console.log('connect error')
+    },
+    onClose (e) {
+      console.log('connect close', e)
+    },
+    onMessage (evt) {
+      const msg = JSON.parse(evt.data)
+      console.log(msg)
+      this.orders = msg.orders
+      this.trades = msg.transactions
     }
   }
 }

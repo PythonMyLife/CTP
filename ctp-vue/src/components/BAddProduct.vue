@@ -92,16 +92,22 @@ export default {
     }
   },
   mounted () {
-    // this.getParams()
+    this.check()
   },
   methods: {
-    getParams () {
+    check () {
+      this.username = localStorage.getItem('username')
+      const id = localStorage.getItem('id')
+      if (id !== 'broker' || this.username === '') {
+        alert('未登录或身份不正确！')
+        this.$router.push({ name: 'Login' })
+      }
     },
     cancel () {
       this.$router.push({ name: 'Broker' })
     },
     submit () {
-      const url = '/api/broker/addProduct'
+      const url = '/bui/api/broker/addProduct'
       const head = {
         headers: {
           'Content-Type': 'application/json;charset=UTF-8'
@@ -109,6 +115,11 @@ export default {
       }
       // const self = this
       this.$axios.post(url, this.product, head).then(response => {
+        if (response.data.status === 1) {
+          alert('添加成功！')
+        } else {
+          alert('添加失败！')
+        }
       })
     }
   }
